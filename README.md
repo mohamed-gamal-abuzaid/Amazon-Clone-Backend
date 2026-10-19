@@ -1,2 +1,2 @@
 # Amazon-Clone-Backend
-Marketplace backend in Java/Spring Boot: products, carts, orders, payments, admin
+Amazon Clone Backend — a production-oriented, modular monolith built with Java and Spring Boot. Designed as a marketplace where a single product can have multiple sellers (each with independent price and stock). The project is split into phased deliverables: implementation plan → database design & ERD → architecture & REST APIs. Actors include Customer, Seller, Admin and System (payments, notifications, order lifecycle). Start modular to build solid business logic, then extract services as needed
