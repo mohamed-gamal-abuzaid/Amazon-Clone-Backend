@@ -33,37 +33,41 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
 
-                // 2. خلي الـ sessions STATELESS — عشان بنستخدم JWT
+                // 3. خلي الـ sessions STATELESS — بنستخدم JWT
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // 3. حدد مين يقدر يوصل لإيه
+                // 4. تحديد الصلاحيات والمسارات
                 .authorizeHttpRequests(auth -> auth
-                        // الـ Auth endpoints — مفتوحة للكل
+                        // مسارات الـ Auth مفتوحة للكل
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        // Swagger & Static Player & HTML files — مفتوح للكل
+
+                        // Swagger & OpenAPI Documentation — مفتوح للكل
                         .requestMatchers(
-                                "/static/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/api-docs/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
-                        // Endpoints خاصة بالقناة محتاجة حماية (لازم تيجي قبل الـ GET العامة)
-                        .requestMatchers("/api/v1/users/me/**").authenticated()
-                        // الـ GET requests العامة — مفتوحة (مشاهدة بروفايل، بثوث، قنوات، فئات)
-                        .requestMatchers(HttpMethod.GET, "/api/v1/users/*").permitAll()
-                        // أي حاجة تانية — لازم يكون مسجل دخول
+
+                        // تصفح الكتالوج والمنتجات والبراندات والأقسام — متاح للزوار (GET فقط)
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/products/**",
+                                "/api/v1/categories/**",
+                                "/api/v1/brands/**",
+                                "/api/v1/reviews/**"
+                        ).permitAll()
+
+                        // أي طلب آخر — يتطلب تسجيل دخول
                         .anyRequest().authenticated()
                 )
 
-                // 4. ضيف الـ JWT Filter قبل الـ UsernamePasswordAuthenticationFilter
+                // 5. إضافة الـ JWT Filter قبل UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 
     // === Password Encoder — BCrypt ===
     @Bean
