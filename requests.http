@@ -1,0 +1,162 @@
+### ==============================================================================
+### Amazon Clone API Test Collection (IntelliJ IDEA / VS Code REST Client)
+### Base URL: http://localhost:8080
+### ==============================================================================
+
+@baseUrl = http://localhost:8080
+
+### ------------------------------------------------------------------------------
+### 1. AUTHENTICATION APIs
+### ------------------------------------------------------------------------------
+
+### 1.1 Register New User
+# @name register
+POST {{baseUrl}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Mohamed Gamal",
+  "email": "mohamed.gamal@example.com",
+  "password": "Password123!",
+  "phone": "01012345678"
+}
+
+### Save Token from Register response
+@authToken = {{register.response.body.accessToken}}
+
+### 1.2 Login User
+# @name login
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "mohamed.gamal@example.com",
+  "password": "Password123!"
+}
+
+### ------------------------------------------------------------------------------
+### 2. USER PROFILE APIs (Requires Bearer Token)
+### ------------------------------------------------------------------------------
+
+### 2.1 Get My Profile
+GET {{baseUrl}}/api/v1/profile/me
+Authorization: Bearer {{authToken}}
+
+### 2.2 Update My Profile
+PUT {{baseUrl}}/api/v1/profile/me
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "fullName": "Mohamed Gamal Updated",
+  "phone": "01099998888"
+}
+
+### ------------------------------------------------------------------------------
+### 3. ADDRESS APIs (Requires Bearer Token)
+### ------------------------------------------------------------------------------
+
+### 3.1 Get All My Addresses
+GET {{baseUrl}}/api/v1/users/me/addresses
+Authorization: Bearer {{authToken}}
+
+### 3.2 Add First Address (Automatically Default)
+# @name createFirstAddress
+POST {{baseUrl}}/api/v1/users/me/addresses
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "fullName": "Mohamed Home",
+  "phone": "01012345678",
+  "addressLine": "123 Nile Corniche",
+  "addressLine2": "Tower A, Flat 12",
+  "city": "Cairo",
+  "state": "Cairo",
+  "country": "Egypt",
+  "postalCode": "11511",
+  "isDefault": false
+}
+
+@addressId1 = {{createFirstAddress.response.body.id}}
+
+### 3.3 Add Second Address
+# @name createSecondAddress
+POST {{baseUrl}}/api/v1/users/me/addresses
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "fullName": "Mohamed Office",
+  "phone": "01098765432",
+  "addressLine": "45 Smart Village",
+  "city": "Giza",
+  "country": "Egypt",
+  "postalCode": "12577",
+  "isDefault": false
+}
+
+@addressId2 = {{createSecondAddress.response.body.id}}
+
+### 3.4 Update Address
+PUT {{baseUrl}}/api/v1/users/me/addresses/{{addressId1}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "fullName": "Mohamed Home Renamed",
+  "phone": "01055554444",
+  "addressLine": "789 New St",
+  "city": "Alexandria",
+  "country": "Egypt",
+  "postalCode": "21500"
+}
+
+### 3.5 Set Address as Default
+PATCH {{baseUrl}}/api/v1/users/me/addresses/{{addressId2}}/default
+Authorization: Bearer {{authToken}}
+
+### 3.6 Delete Address
+DELETE {{baseUrl}}/api/v1/users/me/addresses/{{addressId2}}
+Authorization: Bearer {{authToken}}
+
+### ------------------------------------------------------------------------------
+### 4. BRAND APIs
+### ------------------------------------------------------------------------------
+
+### 4.1 Get All Brands (Public)
+GET {{baseUrl}}/api/v1/brands
+
+### 4.2 Create Brand (Admin Only)
+# @name createBrand
+POST {{baseUrl}}/api/v1/brands
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Apple",
+  "slug": "apple"
+}
+
+@brandId = {{createBrand.response.body.id}}
+
+### 4.3 Get Brand By ID (Public)
+GET {{baseUrl}}/api/v1/brands/{{brandId}}
+
+### 4.4 Get Brand By Name (Public)
+GET {{baseUrl}}/api/v1/brands/name/Apple
+
+### 4.5 Update Brand (Admin Only)
+PUT {{baseUrl}}/api/v1/brands
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "id": "{{brandId}}",
+  "name": "Apple Inc.",
+  "slug": "apple-inc"
+}
+
+### 4.6 Delete Brand (Admin Only)
+DELETE {{baseUrl}}/api/v1/brands/{{brandId}}
+Authorization: Bearer {{authToken}}
