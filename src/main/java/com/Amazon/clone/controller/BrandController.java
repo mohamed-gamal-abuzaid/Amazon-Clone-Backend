@@ -24,37 +24,29 @@ public class BrandController {
 
     private final BrandService brandService;
 
-    // ===========================
-    //       GET ALL BRANDS
-    // ===========================
+
     @GetMapping
     @Operation(summary = "Get all brands", description = "Get list of all available brands (Public)")
     public ResponseEntity<List<BrandResponse>> getAllBrands() {
         return ResponseEntity.ok(brandService.findAllBrands());
     }
 
-    // ===========================
-    //      GET BRAND BY ID
-    // ===========================
+
     @GetMapping("/{brandId}")
     @Operation(summary = "Get brand by ID", description = "Get details of a brand by its ID (Public)")
     public ResponseEntity<BrandResponse> getBrandById(@PathVariable UUID brandId) {
         return ResponseEntity.ok(brandService.findByBrandId(brandId));
     }
 
-    // ===========================
-    //     GET BRAND BY NAME
-    // ===========================
+
     @GetMapping("/name/{brandName}")
     @Operation(summary = "Get brand by name", description = "Get details of a brand by its name (Public)")
     public ResponseEntity<BrandResponse> getBrandByName(@PathVariable String brandName) {
         return ResponseEntity.ok(brandService.findByBrandName(brandName));
     }
 
-    // ===========================
-    //       CREATE BRAND
-    // ===========================
-    @PreAuthorize("hasRole('ADMIN')")
+
+        @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @Operation(summary = "Create a new brand", description = "Create a new brand (Admin only)")
     public ResponseEntity<BrandResponse> createBrand(@Valid @RequestBody BrandRequest request) {
@@ -62,9 +54,7 @@ public class BrandController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // ===========================
-    //       UPDATE BRAND
-    // ===========================
+
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     @Operation(summary = "Update a brand", description = "Update an existing brand (Admin only)")
@@ -73,9 +63,7 @@ public class BrandController {
         return ResponseEntity.ok(response);
     }
 
-    // ===========================
-    //       DELETE BRAND
-    // ===========================
+
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{brandId}")
     @Operation(summary = "Delete a brand", description = "Delete an existing brand (Admin only)")

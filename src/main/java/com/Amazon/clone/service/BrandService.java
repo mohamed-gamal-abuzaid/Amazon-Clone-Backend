@@ -46,9 +46,9 @@ public class BrandService {
         Brand brand = new Brand();
         brand.setName(brandRequest.getName());
         brand.setSlug(brandRequest.getSlug());
-        Brand savedBrand = brandRepository.save(brand);
+        brandRepository.save(brand);
 
-        return buildBrandResponse(savedBrand);
+        return buildBrandResponse(brand);
     }
 
     @Transactional
@@ -63,8 +63,8 @@ public class BrandService {
             brand.setName(brandRequest.getName());
         }
 
-        Brand savedBrand = brandRepository.save(brand);
-        return buildBrandResponse(savedBrand);
+        brandRepository.save(brand);
+        return buildBrandResponse(brand);
     }
 
     @Transactional
