@@ -160,3 +160,140 @@ Content-Type: application/json
 ### 4.6 Delete Brand (Admin Only)
 DELETE {{baseUrl}}/api/v1/brands/{{brandId}}
 Authorization: Bearer {{authToken}}
+
+
+###############################################################################
+# 5. CATEGORY MODULE (Admin only for POST/PUT/DELETE, Public for GET)
+###############################################################################
+
+### 5.1 Create Parent Category (Admin Only)
+# @name createParentCategory
+POST {{baseUrl}}/api/v1/categories
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Electronics",
+  "slug": "electronics",
+  "description": "All electronic devices and accessories"
+}
+
+### Store Category ID
+@parentCategoryId = {{createParentCategory.response.body.$.id}}
+
+### 5.2 Create Child Category (Admin Only)
+# @name createChildCategory
+POST {{baseUrl}}/api/v1/categories
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Smartphones",
+  "slug": "smartphones",
+  "description": "Mobile phones and smartphones",
+  "parentCategoryId": "{{parentCategoryId}}"
+}
+
+### Store Child Category ID
+@childCategoryId = {{createChildCategory.response.body.$.id}}
+
+### 5.3 Get All Categories (Public)
+GET {{baseUrl}}/api/v1/categories
+
+### 5.4 Get Category By ID (Public)
+GET {{baseUrl}}/api/v1/categories/{{parentCategoryId}}
+
+### 5.5 Get Subcategories / Children (Public)
+GET {{baseUrl}}/api/v1/categories/{{parentCategoryId}}/children
+
+### 5.6 Update Category (Admin Only)
+PUT {{baseUrl}}/api/v1/categories
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "id": "{{parentCategoryId}}",
+  "name": "Electronics & Gadgets",
+  "slug": "electronics-gadgets",
+  "description": "Updated description for electronics"
+}
+
+### 5.7 Delete Category (Admin Only)
+DELETE {{baseUrl}}/api/v1/categories/{{childCategoryId}}
+Authorization: Bearer {{authToken}}
+
+
+###############################################################################
+# 6. PRODUCT & VARIANT MODULE (Admin only for modifications, Public for GET)
+###############################################################################
+
+### 6.1 Create Product (Admin Only)
+# @name createProduct
+POST {{baseUrl}}/api/v1/products
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Apple iPhone 16 Pro Max",
+  "slug": "apple-iphone-16-pro-max",
+  "description": "Apple flagship smartphone with titanium design and A18 Pro chip.",
+  "brandId": "{{brandId}}",
+  "categoryIds": ["{{parentCategoryId}}"],
+  "status": "ACTIVE"
+}
+
+### Store Product ID & Slug
+@productId = {{createProduct.response.body.$.id}}
+@productSlug = {{createProduct.response.body.$.slug}}
+
+### 6.2 Add Variant to Product (Admin Only)
+# @name addVariant
+POST {{baseUrl}}/api/v1/products/{{productId}}/variants
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "sku": "IPHONE-16-PROMAX-256GB-BLK",
+  "attributes": {
+    "color": "Black Titanium",
+    "storage": "256GB",
+    "ram": "8GB"
+  }
+}
+
+### Store Variant ID
+@variantId = {{addVariant.response.body.$.id}}
+
+### 6.3 Add Image to Product (Admin Only)
+POST {{baseUrl}}/api/v1/products/{{productId}}/images
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "imageUrl": "https://m.media-amazon.com/images/I/61bK6PMOC3L._AC_SX679_.jpg",
+  "altText": "iPhone 16 Pro Max Black Titanium front and back",
+  "sortOrder": 1
+}
+
+### 6.4 Get All Products (Paginated - Public)
+GET {{baseUrl}}/api/v1/products?page=0&size=10
+
+### 6.5 Get Product By ID (Public)
+GET {{baseUrl}}/api/v1/products/{{productId}}
+
+### 6.6 Get Product By Slug (Public)
+GET {{baseUrl}}/api/v1/products/slug/{{productSlug}}
+
+### 6.7 Update Product (Admin Only)
+PUT {{baseUrl}}/api/v1/products/{{productId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "description": "Updated description: Now available with Apple Intelligence features.",
+  "status": "ACTIVE"
+}
+
+### 6.8 Delete Product (Admin Only)
+DELETE {{baseUrl}}/api/v1/products/{{productId}}
+Authorization: Bearer {{authToken}}
